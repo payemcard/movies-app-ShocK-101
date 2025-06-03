@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useFetchMovies, LOCAL_STORAGE_KEY } from '../hooks/useFetchMovies';
+import { useMovies } from '../hooks/useMovies';
 import { loadMoreMovies } from '../api/movies';
 import MovieCard from '../components/MovieCard';
+import { LOCAL_STORAGE_KEY } from '../constants';
 
-function MoviesPage() {
-  const { movies, loading, error, setMovies } = useFetchMovies();
+const MoviesPage = () => {
+  const { movies, loading, error, setMovies } = useMovies();
   const [loadingMore, setLoadingMore] = useState(false);
 
   const handleLoadMore = async () => {
@@ -18,7 +19,6 @@ function MoviesPage() {
       });
     } catch (err) {
       console.error(err);
-      // Optionally, show a notification or user-friendly error
     } finally {
       setLoadingMore(false);
     }
