@@ -9,8 +9,6 @@ function App() {
       <Routes>
         <Route path="/movies" element={<MoviesPage />} />
         <Route path="/movies/:id" element={<MovieDetailPage />} />
-        {/* Redirect root to /movies and handle other unmatched paths */}
-        {/* <Route path="/" element={<Navigate to="/movies" replace />} /> */}
         <Route path="*" element={<Navigate to="/movies" replace />} />
       </Routes>
     </Router>
