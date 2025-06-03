@@ -1,7 +1,9 @@
 const express = require('express');
 const { loadMovies } = require('./dbUtils');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get("/api/movies", (req, res) => {
@@ -32,4 +34,4 @@ app.put('/api/movies/:id', (req, res) => {
     res.status(200).send("PUT request received. Implement logic here, ensuring that the watched status of the movie is updated.");
 });
 
-app.listen(5000, () => console.log('Server running on port 5000'));
+app.listen(5001, () => console.log('Server running on port 5001'));
