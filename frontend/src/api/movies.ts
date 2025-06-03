@@ -55,3 +55,13 @@ export async function updateMovieWatchedStatus(id: string, watched: boolean): Pr
 
   return updatedMovie;
 }
+
+export const loadMoreMovies = async(): Promise<Movie[]> => {
+  const response = await fetch('http://localhost:5001/api/movies/load-more', {
+    method: 'POST',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to load more movies');
+  }
+  return response.json();
+}

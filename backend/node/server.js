@@ -42,18 +42,44 @@ app.put('/api/movies/:id', (req, res) => {
             return res.status(404).json({ error: "Movie not found" });
         }
 
-        // Update the watched status (or any field from req.body)
         if (typeof req.body.watched === 'boolean') {
             movies[movieIndex].watched = req.body.watched;
         }
 
-        // Save back to db.json
         fs.writeFileSync(dbPath, JSON.stringify(movies, null, 2));
 
         res.json(movies[movieIndex]);
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
     }
+});
+
+app.post('/api/movies/load-more', (req, res) => {
+  try {
+    const movies = loadMovies();
+
+    if (movies.length === 0) {
+      return res.status(400).json({ error: "No movies to clone from" });
+    }
+
+    const lastId = movies[movies.length - 1].id;
+    const newMoviesCount = 5;
+    const newMovies = [];
+    for (let i = 0; i < newMoviesCount; i++) {
+      const baseMovie = movies[i % movies.length];
+      const newId = lastId + i + 1;
+      const cloned = { ...baseMovie, id: newId };
+      newMovies.push(cloned);
+    }
+
+    const updatedMovies = [...movies, ...newMovies];
+
+    fs.writeFileSync(dbPath, JSON.stringify(updatedMovies, null, 2));
+    res.json(newMovies);
+  } catch (error) {
+    console.error('Error generating movies:', error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 app.listen(5001, () => console.log('Server running on port 5001'));
