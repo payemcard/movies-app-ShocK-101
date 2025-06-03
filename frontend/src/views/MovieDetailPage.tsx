@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFetchMovie } from '../hooks/useFetchMovie';
 import { useImageWithFallback } from '../hooks/useImageWithFallback';
+import { updateMovieWatchedStatus } from '../api/movies';
 
 const MovieDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { movie, loading, error } = useFetchMovie(id!);
   const { imgSrc, onError } = useImageWithFallback(movie?.thumbnail);
+  const [watched, setWatched] = useState<boolean | undefined>(movie?.watched);
+
+  // Keep local watched status in sync if movie changes
+  React.useEffect(() => {
+    setWatched(movie?.watched);
+  }, [movie?.watched]);
+
+  const handleImdbClick = useCallback(
+    async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      if (!watched) {
+        try {
+          // Await API call and update local state
+          await updateMovieWatchedStatus(movie!.id, true);
+          setWatched(true);
+        } catch (err) {
+          // Optionally: show a toast, log error, etc
+        }
+      }
+      // Continue: let the link open in a new tab
+    },
+    [movie, watched]
+  );
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading movie details...</div>;
@@ -23,11 +46,11 @@ const MovieDetailPage: React.FC = () => {
   return (
     <div className="max-w-xl mx-auto bg-white rounded-lg shadow-lg mt-8 p-8">
       <img
-  src={imgSrc}
-  alt={movie.name}
-  className="w-full h-96 object-contain rounded mb-6"
-  onError={onError}
-/>
+        src={imgSrc}
+        alt={movie.name}
+        className="w-full h-96 object-contain rounded mb-6"
+        onError={onError}
+      />
       <h1 className="text-3xl font-bold mb-2">{movie.name}</h1>
       <div className="mb-2">
         <span className="font-semibold">Genre:</span> {movie.genre}
@@ -37,7 +60,7 @@ const MovieDetailPage: React.FC = () => {
       </div>
       <div className="mb-2">
         <span className="font-semibold">Watched:</span>{' '}
-        {movie.watched ? (
+        {watched ? (
           <span className="text-green-600 font-bold">Yes</span>
         ) : (
           <span className="text-red-600 font-bold">No</span>
@@ -49,6 +72,7 @@ const MovieDetailPage: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-600 underline font-semibold"
+          onClick={handleImdbClick}
         >
           View on IMDb
         </a>

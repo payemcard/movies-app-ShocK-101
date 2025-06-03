@@ -1,6 +1,8 @@
 const express = require('express');
 const { loadMovies } = require('./dbUtils');
 const cors = require('cors');
+const fs = require('fs');
+const dbPath = './db.json';
 
 const app = express();
 app.use(cors());
@@ -31,7 +33,27 @@ app.get("/api/movies/:id", (req, res) => {
 
 
 app.put('/api/movies/:id', (req, res) => {
-    res.status(200).send("PUT request received. Implement logic here, ensuring that the watched status of the movie is updated.");
+    try {
+        const movies = loadMovies();
+        const movieId = parseInt(req.params.id);
+        const movieIndex = movies.findIndex(m => m.id === movieId);
+
+        if (movieIndex === -1) {
+            return res.status(404).json({ error: "Movie not found" });
+        }
+
+        // Update the watched status (or any field from req.body)
+        if (typeof req.body.watched === 'boolean') {
+            movies[movieIndex].watched = req.body.watched;
+        }
+
+        // Save back to db.json
+        fs.writeFileSync(dbPath, JSON.stringify(movies, null, 2));
+
+        res.json(movies[movieIndex]);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 app.listen(5001, () => console.log('Server running on port 5001'));

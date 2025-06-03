@@ -17,3 +17,17 @@ export async function getMovie(id: string): Promise<Movie> {
   const data = await response.json();
   return data;
 }
+
+export async function updateMovieWatchedStatus(id: string, watched: boolean): Promise<Movie> {
+  const response = await fetch(`http://localhost:5001/api/movies/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ watched }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update watched status');
+  }
+  return response.json();
+}
