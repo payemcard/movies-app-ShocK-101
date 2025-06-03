@@ -1,28 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useFetchMovies } from '../hooks/useFetchMovies';
+import React, { useState } from 'react';
+import { useFetchMovies, LOCAL_STORAGE_KEY } from '../hooks/useFetchMovies';
 import { loadMoreMovies } from '../api/movies';
 import MovieCard from '../components/MovieCard';
 
 function MoviesPage() {
-  const { movies: initialMovies, loading, error, setMovies } = useFetchMovies();
-  const [movies, setLocalMovies] = useState(initialMovies);
+  const { movies, loading, error, setMovies } = useFetchMovies();
   const [loadingMore, setLoadingMore] = useState(false);
-
-  useEffect(() => {
-    setLocalMovies(initialMovies);
-  }, [initialMovies]);
 
   const handleLoadMore = async () => {
     setLoadingMore(true);
     try {
       const newMovies = await loadMoreMovies();
-      const updatedMovies = [...movies, ...newMovies];
-      setLocalMovies(updatedMovies);
-      setMovies(updatedMovies);
-      localStorage.setItem('movies', JSON.stringify(updatedMovies));
+      setMovies(prevMovies => {
+        const updatedMovies = [...prevMovies, ...newMovies];
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedMovies));
+        return updatedMovies;
+      });
     } catch (err) {
-      // TODO handle error if you want
       console.error(err);
+      // Optionally, show a notification or user-friendly error
     } finally {
       setLoadingMore(false);
     }

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getMovies } from '../api/movies';
 import { Movie } from '../types/movie';
-import { LOCAL_STORAGE_KEY } from '../constants';
+
+export const LOCAL_STORAGE_KEY = 'movies';
 
 export function useFetchMovies() {
   const [movies, setMovies] = useState<Movie[]>(() => {
