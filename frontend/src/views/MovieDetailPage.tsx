@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useFetchMovie } from '../hooks/useFetchMovie';
 import { useImageWithFallback } from '../hooks/useImageWithFallback';
 import { updateMovieWatchedStatus } from '../api/movies';
+import { Movie } from '../types/movie';
 
 const MovieDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,18 +17,29 @@ const MovieDetailPage: React.FC = () => {
   }, [movie?.watched]);
 
   const handleImdbClick = useCallback(
-    async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-      if (!watched && movie) {
-        try {
-          await updateMovieWatchedStatus(movie.id, true);
-          setWatched(true);
-        } catch (err) {
-          // TODO: handle error (e.g., show notification)
-        }
-      }
-    },
-    [movie, watched]
-  );
+  async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (!watched && movie) {
+      try {
+  const updatedMovie = await updateMovieWatchedStatus(movie.id, true);
+  setWatched(true);
+
+  const stored = localStorage.getItem('movies');
+  if (stored) {
+    const movies: Movie[] = JSON.parse(stored);
+    const updatedMovies = movies.map(movie =>
+      movie.id === updatedMovie.id ? updatedMovie : movie
+    );
+    localStorage.setItem('movies', JSON.stringify(updatedMovies));
+  }
+} catch (error) {
+  // TODO Handle or log the error (whether network or localStorage)
+}
+
+    }
+  },
+  [movie, watched]
+);
+
 
   if (!id) {
     return <div className="flex justify-center items-center h-screen">Invalid movie URL.</div>;

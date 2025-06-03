@@ -1,3 +1,4 @@
+import { LOCAL_STORAGE_KEY } from '../constants';
 import { Movie } from '../types/movie';
 
 export async function getMovies(): Promise<Movie[]> {
@@ -29,5 +30,22 @@ export async function updateMovieWatchedStatus(id: string, watched: boolean): Pr
   if (!response.ok) {
     throw new Error('Failed to update watched status');
   }
-  return response.json();
+  const updatedMovie = await response.json();
+
+  // Update localStorage with updated movie
+  try {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (stored) {
+      const movies: Movie[] = JSON.parse(stored);
+      const index = movies.findIndex(m => m.id === updatedMovie.id);
+      if (index !== -1) {
+        movies[index] = updatedMovie;
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(movies));
+      }
+    }
+  } catch {
+    // ignore localStorage errors
+  }
+
+  return updatedMovie;
 }
