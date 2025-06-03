@@ -1,16 +1,60 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import { useFetchMovie } from '../hooks/useFetchMovie';
+import { useImageWithFallback } from '../hooks/useImageWithFallback';
 
-function MovieDetailPage() {
+const MovieDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { movie, loading, error } = useFetchMovie(id!);
+  const { imgSrc, onError } = useImageWithFallback(movie?.thumbnail);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading movie details...</div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error.message}</div>;
+  }
+
+  if (!movie) {
+    return <div className="flex justify-center items-center h-screen">Movie not found.</div>;
+  }
 
   return (
-    <div>
-      <h1>Movie Detail Page</h1>
-      <p>This is the placeholder for the movie detail page.</p>
-      {id && <p>Movie ID: {id}</p>}
+    <div className="max-w-xl mx-auto bg-white rounded-lg shadow-lg mt-8 p-8">
+      <img
+  src={imgSrc}
+  alt={movie.name}
+  className="w-full h-96 object-contain rounded mb-6"
+  onError={onError}
+/>
+      <h1 className="text-3xl font-bold mb-2">{movie.name}</h1>
+      <div className="mb-2">
+        <span className="font-semibold">Genre:</span> {movie.genre}
+      </div>
+      <div className="mb-2">
+        <span className="font-semibold">Rating:</span> {movie.rating}/5
+      </div>
+      <div className="mb-2">
+        <span className="font-semibold">Watched:</span>{' '}
+        {movie.watched ? (
+          <span className="text-green-600 font-bold">Yes</span>
+        ) : (
+          <span className="text-red-600 font-bold">No</span>
+        )}
+      </div>
+      <div className="mt-4">
+        <a
+          href={movie.imdb_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline font-semibold"
+        >
+          View on IMDb
+        </a>
+      </div>
     </div>
   );
-}
+};
 
-export default MovieDetailPage; 
+export default MovieDetailPage;

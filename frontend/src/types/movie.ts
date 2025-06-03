@@ -2,5 +2,8 @@ export interface Movie {
   id: string;
   name: string;
   thumbnail: string;
-  // Add other properties as needed for the detail view later
-} 
+  rating: number;
+  genre: string;
+  watched: boolean;
+  imdb_url: string;
+}
