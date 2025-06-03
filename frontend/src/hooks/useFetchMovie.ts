@@ -18,7 +18,7 @@ export function useFetchMovie(id: string) {
   useEffect(() => {
     if (movie) {
       setLoading(false);
-      return; // We already have the movie cached
+      return;
     }
 
     const fetchMovie = async () => {

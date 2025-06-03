@@ -32,7 +32,6 @@ export async function updateMovieWatchedStatus(id: string, watched: boolean): Pr
   }
   const updatedMovie = await response.json();
 
-  // Update localStorage with updated movie
   try {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (stored) {
@@ -43,14 +42,14 @@ export async function updateMovieWatchedStatus(id: string, watched: boolean): Pr
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(movies));
       }
     }
-  } catch {
-    // ignore localStorage errors
+  } catch(err) {
+    console.error(err);
   }
 
    try {
     localStorage.setItem(`movie-${updatedMovie.id}`, JSON.stringify(updatedMovie));
-  } catch {
-    // ignore localStorage errors for the individual movie
+  } catch(err) {
+    console.error(err);
   }
 
   return updatedMovie;
