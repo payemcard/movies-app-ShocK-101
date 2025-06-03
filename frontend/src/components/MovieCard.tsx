@@ -8,10 +8,10 @@ interface MovieCardProps {
 
 const MovieCard: React.FC<MovieCardProps> = React.memo(({ movie }) => {
   return (
-    <Link to={`/movies/${movie.id}`} className="border rounded-lg overflow-hidden shadow-lg m-2">
-      <img src={movie.thumbnail} alt={movie.name} className="w-full h-48 object-cover" />
+    <Link to={`/movies/${movie.id}`} className="border rounded-lg overflow-hidden shadow-lg bg-surface block">
+      <img src={movie.thumbnail} alt={movie.name} className="w-full object-contain" />
       <div className="p-4">
-        <h3 className="text-lg font-bold">{movie.name}</h3>
+        <h3 className="text-lg font-bold text-text">{movie.name}</h3>
       </div>
     </Link>
   );
