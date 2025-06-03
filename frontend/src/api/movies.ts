@@ -47,5 +47,11 @@ export async function updateMovieWatchedStatus(id: string, watched: boolean): Pr
     // ignore localStorage errors
   }
 
+   try {
+    localStorage.setItem(`movie-${updatedMovie.id}`, JSON.stringify(updatedMovie));
+  } catch {
+    // ignore localStorage errors for the individual movie
+  }
+
   return updatedMovie;
 }
