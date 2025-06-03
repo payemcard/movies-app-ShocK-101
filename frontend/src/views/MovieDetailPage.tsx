@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFetchMovie } from '../hooks/useFetchMovie';
 import { useImageWithFallback } from '../hooks/useImageWithFallback';
@@ -6,30 +6,31 @@ import { updateMovieWatchedStatus } from '../api/movies';
 
 const MovieDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { movie, loading, error } = useFetchMovie(id!);
+  const { movie, loading, error } = useFetchMovie(id ?? "");
   const { imgSrc, onError } = useImageWithFallback(movie?.thumbnail);
   const [watched, setWatched] = useState<boolean | undefined>(movie?.watched);
 
-  // Keep local watched status in sync if movie changes
-  React.useEffect(() => {
+  useEffect(() => {
     setWatched(movie?.watched);
   }, [movie?.watched]);
 
   const handleImdbClick = useCallback(
     async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-      if (!watched) {
+      if (!watched && movie) {
         try {
-          // Await API call and update local state
           await updateMovieWatchedStatus(movie!.id, true);
           setWatched(true);
         } catch (err) {
-          // Optionally: show a toast, log error, etc
+          //TODO handle err
         }
       }
-      // Continue: let the link open in a new tab
     },
     [movie, watched]
   );
+
+   if (!id) {
+    return <div className="flex justify-center items-center h-screen">Invalid movie URL.</div>;
+  }
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading movie details...</div>;

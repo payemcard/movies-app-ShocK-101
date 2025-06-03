@@ -6,16 +6,16 @@ function MoviesPage() {
   const { movies, loading, error } = useFetchMovies();
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading movies...</div>; // Basic loading indicator
+    return <div className="flex justify-center items-center h-screen">Loading movies...</div>;
   }
 
   if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error.message}</div>; // Basic error display
+    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error.message}</div>;
   }
 
   return (
     <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"> {/* Changed back to Grid layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {movies.map(movie => (
           <MovieCard key={movie.id} movie={movie} />
         ))}
