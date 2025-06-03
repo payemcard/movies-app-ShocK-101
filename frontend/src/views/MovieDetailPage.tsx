@@ -1,10 +1,11 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useFetchMovie } from '../hooks/useFetchMovie';
 import { useImageWithFallback } from '../hooks/useImageWithFallback';
 import { updateMovieWatchedStatus } from '../api/movies';
 
 const MovieDetailPage: React.FC = () => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { movie, loading, error } = useFetchMovie(id ?? "");
   const { imgSrc, onError } = useImageWithFallback(movie?.thumbnail);
@@ -18,17 +19,17 @@ const MovieDetailPage: React.FC = () => {
     async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       if (!watched && movie) {
         try {
-          await updateMovieWatchedStatus(movie!.id, true);
+          await updateMovieWatchedStatus(movie.id, true);
           setWatched(true);
         } catch (err) {
-          //TODO handle err
+          // TODO: handle error (e.g., show notification)
         }
       }
     },
     [movie, watched]
   );
 
-   if (!id) {
+  if (!id) {
     return <div className="flex justify-center items-center h-screen">Invalid movie URL.</div>;
   }
 
@@ -46,6 +47,12 @@ const MovieDetailPage: React.FC = () => {
 
   return (
     <div className="max-w-xl mx-auto bg-white rounded-lg shadow-lg mt-8 p-8">
+      <button
+        onClick={() => navigate("/movies")}
+        className="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-semibold"
+      >
+        ← Back to Movies
+      </button>
       <img
         src={imgSrc}
         alt={movie.name}
